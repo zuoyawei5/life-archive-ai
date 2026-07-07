@@ -159,12 +159,11 @@ pm2 startup
 
 ```
 life-archive-ai/
-├── www/                  # 前端静态资源
-│   ├── index.html
-│   ├── app.js
-│   ├── manifest.json
-│   ├── sw.js
-│   └── assets/           # 图片资源
+├── index.html            # 前端入口（GitHub Pages 根目录）
+├── app.js                # 前端主逻辑
+├── manifest.json
+├── sw.js
+├── assets/               # 图片资源
 ├── server.js             # 后端代理服务
 ├── package.json
 ├── .env.example
@@ -178,5 +177,7 @@ life-archive-ai/
 ## 注意事项
 
 - 前端 Demo 默认连接本地后端 `http://localhost:3001`，如需公网访问需部署后端代理
+- 打开前端后，点击右上角 **⚙️ 未连接** 徽章，输入你的后端代理地址并保存，即可启用真实 AI 能力
+- 后端未配置 API Key 或网络不可达时，AI 文案、回忆录脚本、照片分析会自动降级为本地规则生成
 - 所有 API Key 仅存储在服务端环境变量中，前端不直接接触密钥
 - 生产环境建议开启 HTTPS 并配置域名
