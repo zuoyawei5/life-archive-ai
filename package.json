@@ -1,0 +1,29 @@
+{
+  "name": "life-archive-ai",
+  "version": "3.0.0",
+  "description": "AI人生档案馆 - 智能照片管理与人生记忆归档",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node scripts/build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "AI",
+    "photos",
+    "memory",
+    "TRAE"
+  ],
+  "author": "zuoyawei5",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "node-fetch": "^2.7.0"
+  }
+}

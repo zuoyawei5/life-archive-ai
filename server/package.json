@@ -1,0 +1,16 @@
+{
+  "name": "life-archive-ai-server",
+  "version": "1.0.0",
+  "description": "AI人生档案馆 - 后端代理服务",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "axios": "^1.7.7"
+  }
+}

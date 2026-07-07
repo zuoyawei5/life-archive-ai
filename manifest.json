@@ -1,0 +1,25 @@
+{
+  "name": "AI人生档案馆",
+  "short_name": "人生档案馆",
+  "description": "让每一张照片都有意义，构建你的人生第二大脑",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "scope": ".",
+  "icons": [
+    {
+      "src": "assets/icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

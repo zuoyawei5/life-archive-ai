@@ -1,0 +1,11 @@
+node_modules/
+server/node_modules/
+.env
+.trae
+.trae-cn
+*.log
+dist/
+screenshots/
+_shared/
+test-api.js
+scenario-test.js

@@ -1,0 +1,13 @@
+{
+  "appId": "com.lifearchive.ai",
+  "appName": "AI人生档案馆",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "file",
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true
+  }
+}
