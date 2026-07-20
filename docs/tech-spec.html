@@ -216,11 +216,161 @@
 <header>
   <h1>AI人生档案馆</h1>
   <div class="subtitle">技术方案文档 — 架构设计、AI模型选型与TRAE集成</div>
-  <div class="meta">版本 v3.1 &nbsp;|&nbsp; 更新日期 2026-07-07 &nbsp;|&nbsp; 密级：内部公开</div>
+  <div class="meta">版本 v5.0 &nbsp;|&nbsp; 更新日期 2026-07-09 &nbsp;|&nbsp; 密级：内部公开</div>
 </header>
 
 <h2>1. 项目概述</h2>
 <p><strong>AI人生档案馆</strong>是一款基于AI能力的智能照片管理与人生记忆归档应用。产品核心理念为："让每一张照片都有归属，让每一个瞬间都被理解"。通过对用户照片的AI智能分析，自动完成分类、评分、归档建议，并提供回忆文案生成、人生时间轴视频等创新功能。</p>
+
+<h3>v5.0 重大里程碑升级说明</h3>
+<div class="callout warning">
+  <strong>v5.0 重大里程碑升级说明（2026-07-09）：</strong>
+  <ul>
+    <li><strong>用户登录系统：</strong>新增手机号一键登录/注册功能。首次输入手机号即自动注册，验证码验证后登录。用户数据按手机号隔离存储，切换账号后数据自动恢复。支持退出登录、记住登录状态。</li>
+    <li><strong>部署方案文档：</strong>新增《部署与上线指南》，覆盖 Capacitor 打包安卓 APK、应用商店上架流程、阿里云 ECS 部署步骤、后台用户数据管理方案。</li>
+  </ul>
+</div>
+
+<h3>v4.2 第十二阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v4.2 第十二阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>分类加权评分体系：</strong>废弃固定权重（emotion 0.25 / info 0.2 / knowledge 0.15 / life 0.25 / future 0.15），改为按照片分类动态调整权重：
+      <ul>
+        <li><strong>信息留存(info)：</strong>info 0.40 / future 0.25 / life 0.15 / emotion 0.10 / knowledge 0.10 — 证书证件类信息价值最高</li>
+        <li><strong>知识学习(learning)：</strong>knowledge 0.35 / future 0.25 / info 0.20 / life 0.10 / emotion 0.10 — 知识资料类知识维度最重要</li>
+        <li><strong>情感记忆(emotion)：</strong>emotion 0.35 / life 0.25 / future 0.15 / info 0.15 / knowledge 0.10 — 人物合影情感维度最重要</li>
+        <li><strong>摄影创作(creative)：</strong>emotion 0.25 / life 0.25 / info 0.20 / future 0.15 / knowledge 0.15 — 均衡偏向审美</li>
+        <li><strong>工作沟通(work)：</strong>info 0.30 / knowledge 0.25 / future 0.20 / life 0.15 / emotion 0.10 — 工作文档信息+知识重要</li>
+        <li><strong>临时记录(temp)：</strong>固定低权重，life 0.25 / info 0.20 / emotion 0.20 / future 0.20 / knowledge 0.15</li>
+        <li><strong>生活记录(life)：</strong>life 0.30 / emotion 0.25 / future 0.20 / info 0.15 / knowledge 0.10</li>
+      </ul>
+      效果示例：荣誉证书(info=77, knowledge=0) → 旧公式56分 → 新公式 77×0.4+70×0.25+75×0.15+47×0.1+0×0.1 = 30.8+17.5+11.25+4.7+0 = 64分，叠加保底提升后≥75分。
+    </li>
+  </ul>
+</div>
+
+<h3>v4.1 第十一阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v4.1 第十一阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>个人自传功能：</strong>暂未开放，按钮点击提示"功能开发中"。</li>
+    <li><strong>分类页重构：</strong>移除顶部重复的分类标签栏和星级筛选栏（与下方分类卡片重复）。星级筛选移入分类详情页——点击分类卡片进入后，顶部显示星级筛选标签。分类卡片改为左右结构（左侧缩略图2×2，右侧标题+数量），卡片宽高比约5:3。</li>
+    <li><strong>照片详情左右滑动：</strong>照片详情弹窗支持左右滑动查看前一张/后一张照片，滑到头时提示"已是第一张"/"已是最后一张"。支持触摸滑动和按钮点击两种方式。</li>
+  </ul>
+</div>
+
+<h3>v4.0 里程碑升级说明</h3>
+<div class="callout warning">
+  <strong>v4.0 里程碑升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>首页统计修复：</strong>修复导入照片后总照片、已分析、占用空间仍显示0的问题。确保 <code>updateHomeStats()</code> 在照片导入、分析完成、页面加载各环节均被调用。</li>
+    <li><strong>分类页全面修复：</strong>
+      <ul>
+        <li>所有已分析照片（含被建议清理的）均在对应分类中可见，清理页仅为"建议"而非"移除"</li>
+        <li>每个分类卡片显示前4张照片缩略图（2×2网格）</li>
+        <li>顶部标签栏支持横向滑动，点击标签切换分类照片列表</li>
+        <li>无照片的分类显示占位图标</li>
+      </ul>
+    </li>
+    <li><strong>浅色模式全面适配：</strong>修复浅色模式下多处文字看不清的问题。所有弹窗、回忆录生成、按钮、输入框的字体颜色和背景色均使用CSS变量，随主题自动切换。修复回忆录编辑区域、故事弹窗、照片详情等使用硬编码白色的文字。</li>
+  </ul>
+</div>
+
+<h3>v3.9 第十阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.9 第十阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>分类页缩略图修复：</strong>修复分类卡片缩略图不显示的问题。确保 <code>renderCategoriesPage</code> 在页面加载和导航时正确调用，缩略图使用 <code>min-width:0</code> 防止网格溢出。</li>
+    <li><strong>数字保险柜页面动态化：</strong>移除保险柜页面中全部静态 demo 数据（身份类8张、财务类12张、房产类5张、到期提醒等），改为根据 <code>realPhotos</code> 中 <code>intent==='info'</code> 的照片动态渲染。无照片时显示空状态提示。</li>
+    <li><strong>评分规则调整：</strong>知识学习类照片的评分提升——AI prompt 中明确 knowledge 给 60-85、future 给 60-80，确保学习资料类照片综合分值≥50，不会被建议清理。清理阈值规则调整：仅 <code>intent==='temp'</code>（临时截图）或综合分值&lt;30 且非知识/信息/情感类的高价值照片才建议清理。</li>
+  </ul>
+</div>
+
+<h3>v3.8 第九阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.8 第九阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>首页统计动态化：</strong>总照片、已分析、占用空间三个统计卡片从静态假数据改为基于 realPhotos 动态计算。数字保险柜卡片也完全动态渲染。</li>
+    <li><strong>分类卡片缩略图：</strong>每个分类卡片显示该分类下前4张照片的缩略图（2×2网格），无照片时显示占位图标，让用户直观了解分类内容。</li>
+    <li><strong>分类规则明确化：</strong>重新定义"信息留存"与"知识学习"的边界：
+      <ul>
+        <li><strong>信息留存（info）：</strong>证书、奖状、身份证、护照、银行卡、合同、票据、收据、门禁卡等具有法律效力或身份凭证性质的证件类照片</li>
+        <li><strong>知识学习（learning）：</strong>知识卡片、信息图表、学习笔记、PPT课件、教程截图、思维导图等学习资料类照片</li>
+      </ul>
+      AI prompt 中增加明确分类指引和判定示例，避免知识卡片被误归到信息留存。
+    </li>
+  </ul>
+</div>
+
+<h3>v3.7 第八阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.7 第八阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>清理页修复：</strong>移除清理页中残留的静态 demo 数据（467张高确定性、20张中确定性、固定底栏等），清理页内容完全由 JS 动态渲染。当无导入照片或无低分照片时，仅显示空状态文案提示，不再出现上下矛盾的假数据。</li>
+  </ul>
+</div>
+
+<h3>v3.6 第七阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.6 第七阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>首页精简：</strong>移除首页底部的照片网格区域，照片仅在首页时间轴卡片和保险柜卡片中以缩略图形式展示，完整照片在各功能页面查看。</li>
+    <li><strong>回忆录重构：</strong>移除朗读功能，新增保存功能。保存的回忆录存入 localStorage，在时间轴页面顶部以"回忆录"卡片展示。点击卡片进入图文结合的阅读模式（照片+故事文本）。支持"生成个人自传"——将所有已保存回忆录合并为完整自传并导出。</li>
+    <li><strong>时间轴显示修复：</strong>修复导入5张照片但时间轴只显示4张的问题（按月分组时每组展示全部照片缩略图，不再限制3张）。清理页中的低分照片同时在分类页和时间轴页显示，保持一致性。</li>
+    <li><strong>深色/浅色主题切换：</strong>修复设置页深色主题开关不生效的问题。开关切换时实际切换 CSS 变量主题（深色/浅色），偏好存入 localStorage 持久化。</li>
+  </ul>
+</div>
+
+<h3>v3.5 第六阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.5 第六阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>照片自动归类分发：</strong>新导入的照片分析完成后，不再仅堆放在首页底部网格，而是自动归类到各功能页面：
+      <ul>
+        <li><strong>首页人生时间轴卡片：</strong>展示最近导入的高分照片缩略图，点击可查看详情</li>
+        <li><strong>首页数字保险柜卡片：</strong>分析为"信息留存·证书奖状/证件档案"的照片自动进入保险柜</li>
+        <li><strong>分类页：</strong>按 intent 分类展示真实照片，分类计数为实际导入数量，支持搜索和筛选</li>
+        <li><strong>时间轴页：</strong>按月份分组展示照片，支持点击查看详情</li>
+        <li><strong>清理页：</strong>综合分值<50的中确定性照片自动进入清理页，支持勾选删除进回收站</li>
+      </ul>
+    </li>
+    <li><strong>回忆录选照片修复：</strong>步骤2展示全部已导入照片（非仅时间范围筛选），用户手动勾选，单次最多9张。AI 文案严格按每张照片的视觉分析结果（描述、分类、评分）撰写，确保故事内容与照片贴合。</li>
+    <li><strong>AI写文案关联照片：</strong>文案生成时传入每张照片的 AI 描述、分类标签、评分，而非仅文件名和时间。模型基于照片实际内容生成文案，不再泛泛而谈。</li>
+  </ul>
+</div>
+
+<h3>v3.4 第五阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.4 第五阶段升级说明（2026-07-08）：</strong>
+  <ul>
+    <li><strong>回忆录重做：</strong>步骤2改为照片手动勾选界面（支持全选/取消勾选），用户可自由选择哪些照片纳入自传。AI 以主人公第一人称视角，根据每张照片的视觉分析结果撰写贴合内容的故事章节（如证书照片→撰写何时何地参加何活动获得何证书、心情如何、是否为成长里程碑），每张照片一章，串联成个人自传。按钮文案统一为"生成回忆录"，全选后可生成完整自传。</li>
+    <li><strong>照片分类：</strong>新导入的照片分析完成后，按 intent 分类展示（情感记忆/信息留存/知识学习/工作沟通/摄影创作/临时记录/生活记录），每类可折叠展开。</li>
+    <li><strong>确定性分级与回收站：</strong>分析完成后按综合分值划分为"高确定性"（≥50分，建议保留）和"中确定性"（&lt;50分，建议清理）。用户可勾选低分照片批量删除，删除后进入回收站（可恢复）。</li>
+    <li><strong>隐私文案优化：</strong>去除"AI分析时临时传输压缩图"等表述，改为"照片不上传云端永久存储"，避免用户产生隐私联想。</li>
+  </ul>
+</div>
+
+<h3>v3.3 第四阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.3 第四阶段升级说明（2026-07-07）：</strong>
+  <ul>
+    <li><strong>视觉大模型接入：</strong>照片分析从"像素统计+公式猜测"升级为调用智谱 GLM-4V 视觉模型真正看图理解。前端将照片压缩为 base64（最大 800px，JPEG 0.7质量）发送给后端，后端调用视觉大模型返回照片描述、人物数量（真实看到的而非估算）、是否截图/证书、各维度评分。视觉模型不可用时自动降级为像素信号分析并标记"⚠️ 估算结果"。</li>
+    <li><strong>隐私表述更新：</strong>弱化"本地化处理"表述，改为"照片不上传云端永久存储"。分析结果与照片文件均存储在用户本地浏览器，云端不落盘。</li>
+    <li><strong>AI 大模型功能梳理：</strong>明确划分"必须调用 AI 大模型才能实现最佳效果"与"本地即可完成"的功能边界（详见第 4 章更新）。</li>
+  </ul>
+</div>
+
+<h3>v3.2 第三阶段升级说明</h3>
+<div class="callout warning">
+  <strong>v3.2 第三阶段升级说明（2026-07-07）：</strong>
+  <ul>
+    <li><strong>照片删除功能：</strong>照片详情弹窗底部"删除"按钮真正生效，点击后弹出确认对话框，确认后从列表移除并更新 localStorage；照片网格长按也可触发删除。</li>
+    <li><strong>照片一句话描述：</strong>AI 分析报告新增"AI 描述"字段，位于意图分类下方。分析流程为：前端 Canvas 提取像素信号 → 后端将信号转化为详细自然语言描述 → 生成一句话中文描述（如"一张电商商品截图，含价格与商品信息"）。v3.3 升级为视觉大模型直接生成语义描述。</li>
+    <li><strong>自传式回忆录：</strong>【生成回忆录】从视频生成改为自传故事集。AI 根据每张照片的分析描述撰写一段故事，照片作为插图穿插其中，所有故事串联成用户的个人自传。用户可通过语音讲述（Web Speech API）或打字录入/修改每段故事，最终生成可阅读的自传文本。</li>
+    <li><strong>分析管线基础：</strong><code>/api/analyze-image</code> 增强：Canvas 信号先在后端转为结构化自然语言描述，再与文件名、时间等元数据一起作为分析依据。v3.3 进一步升级为视觉大模型直接看图。</li>
+  </ul>
+</div>
 
 <h3>v3.1 第二阶段细化说明</h3>
 <div class="callout warning">
@@ -228,7 +378,7 @@
   <ul>
     <li><strong>AI交互流程全面细化：</strong>【生成回忆录】改为多步骤向导：选择主题模板 → 选择时间范围/配乐 → 预览AI旁白脚本 → 生成视频 → 下载/重生成。【AI写文案】改为场景化流程：选择分享场景（朋友圈/小红书/家庭群/动态） → 选择照片 → 设置情感基调 → 生成文案 → 复制/系统分享。</li>
     <li><strong>模型接口真实化与可配置：</strong>Header 新增"⚙️ 未连接"状态徽章，点击后进入 API 配置页；用户填写后端代理地址后，前端自动探测健康状态与 Key 配置。后端代理支持智谱GLM-4-Flash / 硅基流动 / 阿里云百炼 / DeepSeek，API Key 仅存于后端环境变量。</li>
-    <li><strong>图像分析接口对齐：</strong>前端通过 JSON 将照片元数据（文件名、大小、时间戳）提交到 <code>/api/analyze-image</code>，后端基于规则返回分类、评分与归档建议，避免无必要的大文件上传。</li>
+    <li><strong>图像分析接口对齐：</strong>前端通过 Canvas 对照片进行真实像素级分析（文字密度、色彩丰富度、肤色人物检测、截图特征、清晰度），将分析信号与元数据一起提交到 <code>/api/analyze-image</code>，后端基于这些信号综合返回分类、评分与归档建议。</li>
     <li><strong>降级策略：</strong>后端未配置 Key 或网络不可用时，文案、视频脚本、图像分析均自动降级为本地规则生成，保证基础功能可用。</li>
     <li><strong>业务测试场景覆盖：</strong>设计6类核心场景测试：新用户首次导入、重要人生节点归档、批量清理释放空间、生成分享文案、制作回忆录视频、API 服务配置与降级。每个场景包含前置条件、操作路径、预期结果、性能指标。</li>
     <li><strong>移动端交互规范：</strong>所有AI入口点击后进入全屏页面/抽屉；按钮热区 ≥ 44×44px；长操作显示进度与取消保护；空状态、网络失败、降级提示均有 Toast 反馈，符合 iOS/Android 设计规范。</li>
@@ -250,7 +400,7 @@
     <ul>
       <li>AI驱动的智能照片管理工具</li>
       <li>人生记忆的可视化归档系统</li>
-      <li>隐私优先的本地+云端混合方案</li>
+      <li>照片不上传云端永久存储，用户数据自主可控</li>
     </ul>
   </div>
   <div class="card">
@@ -283,40 +433,35 @@
 <div class="arrow">↓</div>
 <div class="arch-box">
   <div class="label">AI能力层</div>
-  <p><span class="badge success">阿里云视觉智能</span> 图像标签/人脸检测/OCR</p>
-  <p><span class="badge success">通义千问 Qwen-Max</span> 回忆文案生成</p>
-  <p><span class="badge warning">TensorFlow.js</span> 本地离线模型（备用）</p>
+  <p><span class="badge success">智谱 GLM-4V</span> 视觉理解：看图识人/物/场景/证书/截图</p>
+  <p><span class="badge success">智谱 GLM-4-Flash</span> 文案生成/自传故事/命名建议</p>
+  <p><span class="badge warning">Canvas 像素分析</span> 降级方案（无视觉模型时使用）</p>
 </div>
 <div class="arrow">↓</div>
 <div class="arch-box">
   <div class="label">数据层</div>
   <p><span class="badge accent">localStorage</span> 照片元数据与分析结果持久化</p>
-  <p><span class="badge accent">File API</span> 本地文件系统访问</p>
-  <p><span class="badge accent">IndexedDB</span> 大文件离线缓存（扩展）</p>
+  <p><span class="badge accent">File API</span> 照片文件仅存本地浏览器</p>
+  <p><span class="badge accent">IndexedDB</span> 大文件本地缓存（扩展）</p>
 </div>
 
 <h3>2.2 部署模式</h3>
 <table>
   <tr><th>模式</th><th>适用场景</th><th>AI能力来源</th><th>隐私级别</th></tr>
   <tr>
-    <td><strong>纯本地模式</strong></td>
-    <td>无网络环境、极高隐私要求</td>
-    <td>TensorFlow.js + 本地规则引擎</td>
-    <td><span class="badge success">完全离线</span></td>
+    <td><strong>视觉AI模式</strong>（推荐）</td>
+    <td>日常使用，已配置AI Key</td>
+    <td>GLM-4V 视觉模型真正看图 + GLM-4-Flash 文案生成</td>
+    <td><span class="badge success">照片不落盘</span></td>
   </tr>
   <tr>
-    <td><strong>混合模式</strong>（推荐）</td>
-    <td>日常使用手机App</td>
-    <td>本地预处理 + 云端AI增强</td>
-    <td><span class="badge accent">差分隐私</span></td>
-  </tr>
-  <tr>
-    <td><strong>云端模式</strong></td>
-    <td>Web端、设备性能受限</td>
-    <td>全云端AI API</td>
-    <td><span class="badge warning">传输加密</span></td>
+    <td><strong>降级模式</strong></td>
+    <td>未配置Key或网络不可用</td>
+    <td>Canvas 像素信号分析 + 本地规则引擎</td>
+    <td><span class="badge accent">完全本地</span></td>
   </tr>
 </table>
+<p style="font-size:0.85rem;color:var(--muted)">注：无论哪种模式，照片原图均不上传云端永久存储，照片文件始终存储在用户本地浏览器中。</p>
 
 <h2>3. 技术栈选型</h2>
 
@@ -338,85 +483,92 @@
   <tr><td>Express</td><td>4.x</td><td>Web框架</td><td>轻量、生态成熟、中间件丰富</td></tr>
   <tr><td>Multer</td><td>1.x</td><td>文件上传</td><td>Express标准上传中间件</td></tr>
   <tr><td>CORS</td><td>2.x</td><td>跨域处理</td><td>开发调试与PWA跨域必备</td></tr>
-  <tr><td>Axios</td><td>1.x</td><td>HTTP客户端</td><td>调用阿里云/通义千问API</td></tr>
+  <tr><td>Axios</td><td>1.x</td><td>HTTP客户端</td><td>调用智谱/硅基流动API</td></tr>
 </table>
 
-<h2>4. AI模型选型</h2>
+<h2>4. AI大模型功能梳理</h2>
 
-<h3>4.1 图像识别与分析</h3>
-<table>
-  <tr><th>能力</th><th>生产模型</th><th>备用模型</th><th>输入/输出</th><th>延迟</th></tr>
-  <tr>
-    <td>场景分类</td>
-    <td>阿里云 <strong>图像标签识别</strong></td>
-    <td>TensorFlow.js MobileNet-v3</td>
-    <td>图片 → 标签列表+置信度</td>
-    <td>&lt;500ms</td>
-  </tr>
-  <tr>
-    <td>人脸检测</td>
-    <td>阿里云 <strong>人脸检测与属性</strong></td>
-    <td>TensorFlow.js BlazeFace</td>
-    <td>图片 → 人数+年龄+表情</td>
-    <td>&lt;300ms</td>
-  </tr>
-  <tr>
-    <td>文字识别</td>
-    <td>阿里云 <strong>通用文字识别</strong></td>
-    <td>PaddleOCR-lite (WebAssembly)</td>
-    <td>图片 → 文本内容+位置</td>
-    <td>&lt;800ms</td>
-  </tr>
-  <tr>
-    <td>图像质量</td>
-    <td>阿里云 <strong>图像清晰度评分</strong></td>
-    <td>本地Canvas模糊度算法</td>
-    <td>图片 → 清晰度分数</td>
-    <td>&lt;200ms</td>
-  </tr>
-</table>
-
+<h3>4.1 必须调用AI大模型才能实现最佳效果的功能</h3>
 <div class="callout">
-  <strong>模型调用链路：</strong>用户上传照片 → 前端Base64编码 → 后端Express接收 → 调用阿里云视觉智能API → 结果聚合 → 五维评分计算 → 返回前端展示。
+  <strong>以下功能依赖视觉/语言大模型的理解与生成能力，本地算法无法替代：</strong>
 </div>
-
-<h3>4.2 大语言模型（LLM）</h3>
 <table>
-  <tr><th>功能</th><th>模型</th><th>调用方式</th><th>Token预估</th></tr>
+  <tr><th>功能</th><th>AI模型</th><th>为什么必须用AI</th><th>降级方案</th></tr>
   <tr>
-    <td>回忆文案生成</td>
-    <td><strong>通义千问 Qwen-Max</strong></td>
-    <td>阿里云DashScope API</td>
-    <td>输入500 / 输出800</td>
+    <td><strong>照片视觉理解</strong></td>
+    <td>智谱 GLM-4V 视觉模型</td>
+    <td>识别照片中真实人物数量、场景类型（证书/截图/风景/合影）、物体内容——像素统计只能估算肤色比例，无法真正"看懂"照片</td>
+    <td>Canvas 像素信号估算（标记⚠️）</td>
   </tr>
   <tr>
-    <td>照片命名建议</td>
-    <td>通义千问 Qwen-Turbo</td>
-    <td>阿里云DashScope API</td>
-    <td>输入300 / 输出100</td>
+    <td><strong>照片一句话描述</strong></td>
+    <td>GLM-4V 视觉模型</td>
+    <td>"一张放在桌子上的荣誉证书"这类语义描述需要视觉理解能力，像素统计只能输出"检测到文字和棕色区域"</td>
+    <td>基于分类结果的模板描述</td>
   </tr>
   <tr>
-    <td>归档建议推理</td>
-    <td>通义千问 Qwen-Turbo</td>
-    <td>阿里云DashScope API</td>
-    <td>输入400 / 输出200</td>
+    <td><strong>照片智能分类</strong></td>
+    <td>GLM-4V 视觉模型</td>
+    <td>区分"证书"和"截图"、"家庭合影"和"路人照片"需要语义理解，纯像素特征无法准确区分</td>
+    <td>Canvas 信号规则分类（标记⚠️）</td>
+  </tr>
+  <tr>
+    <td><strong>五维价值评分</strong></td>
+    <td>GLM-4V 视觉模型</td>
+    <td>情感价值、人生价值等维度需要理解照片语义（如证书的荣誉感、合影的温馨感），公式计算无法体现</td>
+    <td>基于分类的预设评分（标记⚠️）</td>
+  </tr>
+  <tr>
+    <td><strong>自传式回忆录生成</strong></td>
+    <td>GLM-4-Flash 语言模型</td>
+    <td>根据照片内容撰写第一人称故事，需要语言生成能力串联照片描述为连贯自传</td>
+    <td>本地模板拼接（无AI理解）</td>
+  </tr>
+  <tr>
+    <td><strong>多平台分享文案</strong></td>
+    <td>GLM-4-Flash 语言模型</td>
+    <td>朋友圈/小红书/家庭群不同风格的文案生成，需要语言模型的风格迁移能力</td>
+    <td>预设模板填充</td>
+  </tr>
+  <tr>
+    <td><strong>照片命名建议</strong></td>
+    <td>GLM-4-Flash 语言模型</td>
+    <td>根据照片内容生成有意义的名称（如"三亚家庭旅行2026"），需要语义理解</td>
+    <td>时间戳+序号命名</td>
   </tr>
 </table>
 
+<h3>4.2 本地即可完成的功能（无需AI大模型）</h3>
+<table>
+  <tr><th>功能</th><th>实现方式</th><th>说明</th></tr>
+  <tr><td>照片导入与浏览</td><td>File API + Canvas</td><td>浏览器原生能力</td></tr>
+  <tr><td>照片删除与回收站</td><td>DOM操作 + localStorage</td><td>删除进回收站，可恢复</td></tr>
+  <tr><td>照片分类展示</td><td>按 intent 分组渲染</td><td>分类依据来自AI分析结果</td></tr>
+  <tr><td>确定性分级</td><td>按综合分值划分</td><td>≥50分高确定性，&lt;50分中确定性</td></tr>
+  <tr><td>回收站管理</td><td>localStorage</td><td>查看/恢复/彻底删除</td></tr>
+  <tr><td>EXIF元数据提取</td><td>File API 读取文件头</td><td>时间、设备信息无需AI</td></tr>
+  <tr><td>照片网格展示</td><td>CSS Grid + DOM</td><td>纯UI渲染</td></tr>
+  <tr><td>分析结果持久化</td><td>localStorage / IndexedDB</td><td>浏览器存储</td></tr>
+  <tr><td>时间轴排序</td><td>日期排序算法</td><td>纯逻辑</td></tr>
+  <tr><td>语音录入与朗读</td><td>Web Speech API</td><td>浏览器原生API</td></tr>
+  <tr><td>自传文本编辑</td><td>textarea + 导出Blob</td><td>纯前端</td></tr>
+  <tr><td>Canvas 像素分析（降级）</td><td>Canvas getImageData</td><td>肤色/文字密度统计，作为视觉AI不可用时的降级方案</td></tr>
+</table>
+
+<h3>4.3 视觉大模型调用流程</h3>
 <div class="callout success">
-  <strong>Prompt工程要点：</strong>回忆文案生成采用"风格模板 + 照片元数据注入 + 少样本示例"的三段式Prompt，确保输出风格一致且内容贴合照片主题。
+  <strong>视觉分析管线（v3.4）：</strong>
+  <ol>
+    <li>前端将照片转为 base64 发送给后端</li>
+    <li>前端同时执行 Canvas 像素分析作为辅助信号</li>
+    <li>前端将 base64 图片 + canvas 信号 POST 到 <code>/api/analyze-image</code></li>
+    <li>后端调用智谱 GLM-4V 视觉模型，prompt 要求返回 JSON：描述、人物数量、是否截图/证书、分类、五维评分</li>
+    <li>大模型真正看图后返回结构化分析结果（estimated=false）</li>
+    <li>若视觉模型不可用（无Key/网络失败/超时），降级为 Canvas 信号规则分析（estimated=true，界面标记⚠️估算结果）</li>
+  </ol>
 </div>
 
-<h3>4.3 五维价值评分模型</h3>
-<p>每张照片经AI分析后，由后端计算五个维度的价值分数（0-100），加权得出综合评分与星级。</p>
-<table>
-  <tr><th>维度</th><th>权重</th><th>计算依据</th><th>高价值特征</th></tr>
-  <tr><td>情感价值</td><td>25%</td><td>人脸数量、笑脸检测、亲友关系</td><td>多人合影、笑脸、重要节日</td></tr>
-  <tr><td>信息价值</td><td>20%</td><td>OCR文本量、证件类型识别</td><td>证件、合同、票据</td></tr>
-  <tr><td>知识价值</td><td>15%</td><td>文档类型、笔记密度、课程标签</td><td>笔记、PPT、书籍</td></tr>
-  <tr><td>人生价值</td><td>25%</td><td>时间稀缺性、人生节点标签</td><td>毕业、婚礼、旅行</td></tr>
-  <tr><td>未来价值</td><td>15%</td><td>信息有效期、复用概率预测</td><td>证件、技能证书</td></tr>
-</table>
+<h3>4.4 大模型API接入配置</h3>
 
 <h2>5. TRAE集成方案</h2>
 
@@ -428,16 +580,16 @@
     <h4>TRAE Agent 能力调用</h4>
     <ul>
       <li><strong>一键生成时间轴视频：</strong>调用TRAE Agent编排Canvas渲染+音频合成+视频编码pipeline</li>
-      <li><strong>AI写回忆文案：</strong>通过Agent调用通义千问API，自动拼接Prompt并解析结果</li>
+      <li><strong>AI写回忆文案：</strong>通过Agent调用智谱GLM-4-Flash，自动拼接Prompt并解析结果</li>
       <li><strong>智能归档建议：</strong>Agent根据照片分析结果推理最佳归档策略</li>
     </ul>
   </div>
   <div class="card">
     <h4>TRAE MCP / Skills</h4>
     <ul>
-      <li><strong>图像识别Skill：</strong>封装阿里云视觉智能API为标准化Skill接口</li>
-      <li><strong>文案生成Skill：</strong>封装DashScope大模型调用为可复用Skill</li>
-      <li><strong>视频生成Skill：</strong>封装FFmpeg/Canvas视频合成能力</li>
+      <li><strong>视觉理解Skill：</strong>封装智谱GLM-4V视觉模型API为标准化Skill接口</li>
+      <li><strong>文案生成Skill：</strong>封装大模型调用为可复用Skill</li>
+      <li><strong>自传生成Skill：</strong>封装自传故事生成能力</li>
     </ul>
   </div>
 </div>
@@ -500,12 +652,12 @@
 <div class="arrow">↓</div>
 <div class="flow-step">
   <div class="num">2</div>
-  <div class="text"><strong>本地预处理</strong> — 前端提取EXIF信息（时间、GPS、设备），计算基础特征（尺寸、格式）</div>
+  <div class="text"><strong>本地预处理</strong> — 前端提取EXIF信息（时间、GPS、设备），将照片压缩为 base64（最大800px）用于AI分析</div>
 </div>
 <div class="arrow">↓</div>
 <div class="flow-step">
   <div class="num">3</div>
-  <div class="text"><strong>AI分析</strong> — 上传至后端，调用视觉智能API进行标签识别、人脸检测、OCR、质量评分</div>
+  <div class="text"><strong>视觉AI分析</strong> — 后端调用智谱 GLM-4V 视觉模型真正看图，返回描述、人物数量、分类、五维评分</div>
 </div>
 <div class="arrow">↓</div>
 <div class="flow-step">
@@ -535,12 +687,12 @@
 
 <h3>6.2 隐私保护策略</h3>
 <div class="callout success">
-  <strong>隐私优先设计：</strong>
+  <strong>照片不上传云端永久存储：</strong>
   <ul>
-    <li>照片<strong>原图不上传云端</strong>，仅上传压缩缩略图（最大1280px）用于AI分析</li>
-    <li>支持<strong>完全离线模式</strong>，TensorFlow.js本地模型替代云端API</li>
-    <li>分析结果与原始照片分离存储，敏感照片可标记存入<strong>数字保险柜</strong>（加密存储）</li>
+    <li>照片<strong>原图始终存储在用户本地浏览器</strong>，不上传至任何云端服务器永久保存</li>
+    <li>分析结果与照片文件分离存储，敏感照片可标记存入<strong>数字保险柜</strong>（加密存储）</li>
     <li>所有API调用通过后端代理，前端不直接暴露云API密钥</li>
+    <li>未配置AI Key时可使用<strong>Canvas像素分析降级模式</strong>，照片完全不离开浏览器</li>
   </ul>
 </div>
 
@@ -551,8 +703,9 @@
   <tr><th>方法</th><th>路径</th><th>功能</th><th>状态</th></tr>
   <tr><td>GET</td><td><code>/api/health</code></td><td>服务健康检查</td><td><span class="badge success">已上线</span></td></tr>
   <tr><td>GET</td><td><code>/api/config</code></td><td>查询AI能力配置（provider、hasKey）</td><td><span class="badge success">已上线</span></td></tr>
-  <tr><td>POST</td><td><code>/api/analyze-image</code></td><td>单张图片AI分析（JSON 元数据，本地规则模拟）</td><td><span class="badge success">已上线</span></td></tr>
+  <tr><td>POST</td><td><code>/api/analyze-image</code></td><td>单张图片AI分析（视觉大模型看图 + Canvas降级）</td><td><span class="badge success">已上线</span></td></tr>
   <tr><td>POST</td><td><code>/api/generate-story</code></td><td>基于照片元数据生成回忆文案</td><td><span class="badge success">真实模型 + 降级</span></td></tr>
+  <tr><td>POST</td><td><code>/api/generate-memoir</code></td><td>生成自传式回忆录（AI撰写故事+照片插图）</td><td><span class="badge success">真实模型 + 降级</span></td></tr>
   <tr><td>POST</td><td><code>/api/generate-video-script</code></td><td>生成回忆录视频字幕与分镜脚本</td><td><span class="badge success">真实模型 + 降级</span></td></tr>
   <tr><td>POST</td><td><code>/api/photo-title</code></td><td>生成照片命名建议</td><td><span class="badge success">真实模型 + 降级</span></td></tr>
 </table>
@@ -567,11 +720,32 @@
 
 <h3>7.1.2 /api/analyze-image 请求格式</h3>
 <pre><code>{
-  "filename": "三亚家庭旅行.jpg",
+  "filename": "微信图片_20260504.jpg",
   "size": 2048000,
-  "timestamp": "2026-06-15T08:00:00.000Z"
+  "timestamp": "2026-06-15T08:00:00.000Z",
+  "imageBase64": "data:image/jpeg;base64,/9j/4AAQ...",
+  "canvas": {
+    "textDensity": 0.72,
+    "colorVariety": 1850,
+    "skinRatio": 0.01,
+    "screenshotScore": 0.65,
+    "blurScore": 0.95,
+    "brightness": 0.82,
+    "width": 1080,
+    "height": 1920
+  }
 }</code></pre>
-<p>后端基于文件名关键字、大小、时间进行规则分类，返回 intent、tags、scores、stars、suggestion 等字段。</p>
+<p><strong>视觉AI模式（推荐）：</strong>当 <code>imageBase64</code> 存在且后端配置了 API Key 时，后端调用智谱 GLM-4V 视觉模型真正看图分析，返回准确的人物数量、场景识别和语义描述。</p>
+<p>前端通过 Canvas 对照片进行像素级分析，提取以下信号（作为降级方案和辅助数据）：</p>
+<ul>
+  <li><strong>textDensity</strong>（0-1）：将图像分块计算亮度标准差，高方差块占比越高说明文字/图表越多</li>
+  <li><strong>colorVariety</strong>（整数）：量化后的唯一色彩数量，信息图/图表色彩丰富，普通照片色彩平滑</li>
+  <li><strong>skinRatio</strong>（0-1）：肤色像素占比，用于判断是否含人物</li>
+  <li><strong>screenshotScore</strong>（0-1）：截图特征分（大面积纯色区域 + 文字密度高的组合）</li>
+  <li><strong>blurScore</strong>（0-1）：边缘密度倒数，越低越模糊</li>
+  <li><strong>brightness</strong>（0-1）：平均亮度</li>
+</ul>
+<p>后端综合 canvas 信号与文件名关键字按优先级分类：① 模糊照片（blurScore&lt;0.3）→ 临时记录；② 含人物（skinRatio&gt;0.08 + 低文字）→ 情感记忆；③ 知识信息图（textDensity&gt;0.25 + colorVariety&gt;800 + 无人物）→ 知识学习；④ 截图（textDensity&gt;0.15 + blurScore&gt;0.8 + 无人物）→ 临时记录；⑤ 工作文档（中等文字 + 截图特征）→ 工作沟通；⑥ 风景摄影（低文字 + 低肤色 + 低色彩）→ 摄影创作；⑦ 其余含人物 → 情感记忆。截图检测核心信号：高清晰度 + 高文字密度 + 无人物，不再依赖纯色区域比例。五维评分中，截图/临时记录的情感分极低（5-15），生活记录默认情感分也降至 15-25，只有真实含人物的照片才有高情感分。</p>
 
 <h3>7.2 大模型API接入配置（v3.0）</h3>
 <p>后端代理服务支持多家大模型平台，用户只需在启动时配置对应环境变量即可切换。推荐优先级如下：</p>
@@ -616,8 +790,7 @@ SILICONFLOW_API_KEY=your-key
 BAILIAN_API_KEY=your-key
 DEEPSEEK_API_KEY=your-key
 
-# 可选：本地分析开关
-USE_MOCK_ANALYSIS=false   # true时使用本地规则模拟，无需AI Key
+# 降级模式：无Key时使用Canvas像素信号分析（标记估算结果）
 PORT=3001                 # 后端代理服务端口</code></pre>
 
 <h3>7.4 接口调用示例</h3>
@@ -783,10 +956,10 @@ const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completi
   <div class="card">
     <h4>短期（1-2个月）</h4>
     <ul>
-      <li>接入阿里云视觉智能真实API</li>
-      <li>接入通义千问文案生成</li>
+      <li>视觉大模型分析已接入（智谱GLM-4V）</li>
+      <li>自传式回忆录生成已接入（GLM-4-Flash）</li>
       <li>增加人脸识别聚类（按人分组）</li>
-      <li>完善PWA离线体验</li>
+      <li>支持多视觉模型切换（硅基流动Qwen2-VL）</li>
     </ul>
   </div>
   <div class="card">
@@ -824,10 +997,10 @@ const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completi
 <div class="callout">
   <strong>核心竞争优势：</strong>
   <ol>
-    <li><strong>真实AI能力：</strong>可无缝接入阿里云视觉智能与通义千问，非纯前端模拟</li>
+    <li><strong>视觉AI真正看图：</strong>调用智谱 GLM-4V 视觉模型，照片分析基于真实图像理解而非像素猜测</li>
     <li><strong>TRAE原生集成：</strong>MCP/Skills/Agent三层集成，开发即产品</li>
-    <li><strong>隐私优先：</strong>本地分析+差分隐私上传，用户数据自主可控</li>
-    <li><strong>完整闭环：</strong>从相册授权到AI分析到视频生成，端到端体验</li>
+    <li><strong>照片不上传云端：</strong>照片原图始终存本地，云端不落盘</li>
+    <li><strong>完整闭环：</strong>从照片导入到AI分析到自传生成，端到端体验</li>
   </ol>
 </div>
 

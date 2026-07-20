@@ -9,3 +9,10 @@ screenshots/
 _shared/
 test-api.js
 scenario-test.js
+*.db
+www/
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/app/capacitor.build.gradle

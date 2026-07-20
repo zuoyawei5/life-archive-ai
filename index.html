@@ -12,6 +12,15 @@
 <link rel="apple-touch-icon" href="assets/icon_192.png">
 <title>AI人生档案馆</title>
 <script>
+// 主题初始化（必须在CSS加载前执行）
+(function() {
+  var saved = localStorage.getItem('lifeArchiveTheme');
+  if (saved === 'light') {
+    document.documentElement.classList.add('light-theme');
+  }
+})();
+</script>
+<script>
 // API配置
 window.API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:3001'
@@ -35,6 +44,31 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     --radius-sm: 10px;
     --shadow: 0 4px 20px rgba(0,0,0,0.4);
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  html.light-theme {
+    --bg: #f5f5f7;
+    --bg2: #ffffff;
+    --bg3: #e8e8ed;
+    --ink: #1a1a2e;
+    --muted: #8e8e93;
+    --rule: #e5e5ea;
+    --accent: #007aff;
+    --accent2: #5e5ce6;
+    --accent3: #34c759;
+    --danger: #ff3b30;
+    --warning: #ff9500;
+    --success: #34c759;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  html.light-theme .header {
+    background: rgba(255, 255, 255, 0.95);
+  }
+  html.light-theme .bottom-nav {
+    background: rgba(255, 255, 255, 0.98);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -169,6 +203,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     overflow: hidden;
     position: relative;
     cursor: pointer;
+    min-width: 0;
   }
   .photo-item img {
     width: 100%;
@@ -394,6 +429,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
   }
   .timeline-photos {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     margin-top: 8px;
   }
@@ -529,6 +565,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     border: 1px solid var(--rule);
     cursor: pointer;
     transition: all 0.2s;
+    min-width: 0;
   }
   .category-card:active { transform: scale(0.98); }
   .category-card-icon {
@@ -544,12 +581,17 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     color: var(--muted);
     margin-top: 2px;
   }
+  .category-card img {
+    min-width: 0;
+    display: block;
+  }
 
   /* Filter Chips */
   .filter-chips {
     display: flex;
     gap: 8px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     padding-bottom: 8px;
     margin-bottom: 12px;
     -ms-overflow-style: none;
@@ -563,15 +605,19 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     font-weight: 500;
     white-space: nowrap;
     cursor: pointer;
+    flex-shrink: 0;
     border: 1px solid var(--rule);
     background: var(--bg2);
     color: var(--muted);
     transition: all 0.2s;
+    user-select: none;
   }
+  .chip:active { transform: scale(0.96); }
   .chip.active {
     background: var(--accent);
-    color: var(--bg);
+    color: #ffffff;
     border-color: var(--accent);
+    font-weight: 600;
   }
 
   /* Photo Viewer Modal */
@@ -592,7 +638,9 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: rgba(0,0,0,0.5);
+    background: var(--bg2);
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
   }
   .modal-body {
     flex: 1;
@@ -1178,6 +1226,33 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
 </head>
 <body>
 
+<!-- Login Page -->
+<div id="loginPage" style="position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:360px">
+    <div style="text-align:center;margin-bottom:40px">
+      <div style="font-size:48px;margin-bottom:12px">📸</div>
+      <div style="font-size:24px;font-weight:700;color:var(--ink)">AI人生档案馆</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:6px">让每一张照片都有归属</div>
+    </div>
+
+    <div id="loginForm">
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">手机号</label>
+        <input type="tel" id="loginPhone" maxlength="11" placeholder="请输入手机号" style="width:100%;height:48px;padding:0 16px;border:1px solid var(--rule);border-radius:var(--radius-sm);background:var(--bg2);color:var(--ink);font-size:15px;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">验证码</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="loginCode" maxlength="6" placeholder="请输入验证码" style="flex:1;height:48px;padding:0 16px;border:1px solid var(--rule);border-radius:var(--radius-sm);background:var(--bg2);color:var(--ink);font-size:15px;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          <button id="sendCodeBtn" class="btn btn-outline" style="height:48px;min-width:110px;white-space:nowrap" onclick="sendVerifyCode()">获取验证码</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;height:48px;font-size:15px" onclick="doLogin()">登录 / 注册</button>
+      <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted)">首次登录自动注册，输入手机号即可</div>
+    </div>
+  </div>
+</div>
+
 <div class="app-container">
 
   <!-- Onboarding -->
@@ -1190,7 +1265,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     </div>
     <div class="onboarding-privacy">
       <span>🔒</span>
-      <span>所有处理在本地完成，永不上传</span>
+      <span>照片不上传云端，分析结果存本地</span>
     </div>
     <button class="btn btn-primary" onclick="startScan()">开始使用</button>
   </div>
@@ -1210,7 +1285,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
   <div class="header" id="mainHeader" style="display:none">
     <div>
       <div class="header-title" id="pageTitle">AI人生档案馆</div>
-      <div class="header-sub" id="pageSub">本地处理 · 隐私零风险</div>
+      <div class="header-sub" id="pageSub">照片不上传云端 · AI视觉分析</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="header-badge" id="apiStatusBadge" style="cursor:pointer;font-size:12px;background:var(--accent3);border:none;color:var(--bg);font-family:inherit" onclick="openApiConfigModal()" type="button">⚙️ 未连接</button>
@@ -1223,15 +1298,15 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-item">
-        <div class="stat-value" id="statTotal">12,847</div>
+        <div class="stat-value" id="statTotal">0</div>
         <div class="stat-label">总照片</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value" id="statAnalyzed">12,847</div>
+        <div class="stat-value" id="statAnalyzed">0</div>
         <div class="stat-label">已分析</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value" id="statSize">18.6</div>
+        <div class="stat-value" id="statSize">0.0</div>
         <div class="stat-label">占用(GB)</div>
       </div>
     </div>
@@ -1263,18 +1338,10 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
         <div class="card-title"><span class="icon">🎬</span>人生时间轴</div>
         <span class="card-arrow">查看全部 →</span>
       </div>
-      <div class="card-body">
-        <div style="margin-bottom:8px">最近：2026年6月 · 三亚家庭旅行</div>
-        <div class="photo-grid" style="grid-template-columns: repeat(5, 1fr)">
-          <div class="photo-item"><img src="assets/family_beach_400x300.png" alt=""></div>
-          <div class="photo-item"><img src="assets/travel_landscape_400x300.png" alt=""></div>
-          <div class="photo-item"><img src="assets/child_growth_400x300.png" alt=""></div>
-          <div class="photo-item"><img src="assets/food_photo_400x300.png" alt=""></div>
-          <div class="photo-item" style="background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)">+43</div>
-        </div>
-        <div style="margin-top:8px;font-size:12px">
-          <span class="stars">⭐⭐⭐⭐⭐</span> 47张
-        </div>
+      <div class="card-body" id="homeTimelineBody">
+        <div style="margin-bottom:8px" id="homeTimelineInfo">暂无照片，点击导入</div>
+        <div class="photo-grid" style="grid-template-columns: repeat(5, minmax(0, 1fr))" id="homeTimelineGrid"></div>
+        <div style="margin-top:8px;font-size:12px" id="homeTimelineStats"></div>
       </div>
     </div>
 
@@ -1284,44 +1351,25 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
         <div class="card-title"><span class="icon">🔒</span>数字保险柜</div>
         <span class="card-arrow">查看 →</span>
       </div>
-      <div class="card-body">
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <span class="tag tag-blue">身份证</span>
-          <span class="tag tag-blue">护照</span>
-          <span class="tag tag-blue">银行卡</span>
-          <span class="tag tag-blue">合同</span>
-        </div>
-        <div class="reminder-item" style="margin:0">
-          <span class="reminder-icon">📅</span>
-          <div class="reminder-info">
-            <div class="reminder-title">护照到期提醒</div>
-            <div class="reminder-desc">剩余 187 天到期</div>
-          </div>
-          <span class="reminder-days">187天</span>
-        </div>
+      <div class="card-body" id="homeVaultBody">
+        <div id="homeVaultTags" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"></div>
+        <div id="homeVaultGrid" class="photo-grid" style="grid-template-columns:repeat(4,1fr)"></div>
+        <div id="homeVaultEmpty" style="text-align:center;color:var(--muted);font-size:13px;padding:12px">暂无证件类照片</div>
       </div>
     </div>
 
     <!-- Today's Memory Card -->
-    <div class="card" onclick="showToast('回忆详情功能开发中')">
+    <div class="card" id="todayMemoryCard" style="display:none">
       <div class="card-header">
         <div class="card-title"><span class="icon">💭</span>今日回忆</div>
         <span class="card-arrow">查看 →</span>
       </div>
-      <div class="card-body">
-        <div style="display:flex;gap:12px;align-items:center">
-          <img src="assets/travel_landscape_400x300.png" style="width:80px;height:80px;border-radius:10px;object-fit:cover">
-          <div>
-            <div style="font-size:14px;margin-bottom:4px">三年前的今天，你和家人在西湖...</div>
-            <div style="font-size:12px;color:var(--muted)">2023年6月13日 · 3人合影</div>
-          </div>
-        </div>
-      </div>
+      <div class="card-body" id="todayMemoryBody"></div>
     </div>
 
     <!-- Hidden: Import photos area (triggered via header button) -->
     <input type="file" id="photoInput" class="upload-input" accept="image/*" multiple style="display:none">
-    <div id="realPhotoGrid" class="real-photo-grid"></div>
+    <div id="realPhotoGrid" class="real-photo-grid" style="display:none"></div>
     <div id="analysisStatus" class="analysis-status" style="display:none">
       <div class="dot"></div>
       <span id="analysisStatusText">AI正在分析照片...</span>
@@ -1332,61 +1380,20 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
   <div class="page" id="pageCategories">
     <div class="search-bar">
       <span>🔍</span>
-      <input type="text" placeholder="搜索照片、OCR文字..." id="searchInput">
+      <input type="text" placeholder="搜索照片名称、描述、分类..." id="searchInput" oninput="searchPhotos(this.value)">
     </div>
-    <div class="filter-chips">
-      <div class="chip active" onclick="filterPhotos('all', this)">全部</div>
-      <div class="chip" onclick="filterPhotos('emotion', this)">情感记忆</div>
-      <div class="chip" onclick="filterPhotos('info', this)">信息留存</div>
-      <div class="chip" onclick="filterPhotos('learning', this)">知识学习</div>
-      <div class="chip" onclick="filterPhotos('work', this)">工作沟通</div>
-      <div class="chip" onclick="filterPhotos('creative', this)">摄影创作</div>
-      <div class="chip" onclick="filterPhotos('temp', this)">临时记录</div>
-    </div>
-    <div class="filter-chips">
-      <div class="chip active" onclick="filterByStar('all', this)">全部星级</div>
-      <div class="chip" onclick="filterByStar('5', this)">⭐⭐⭐⭐⭐</div>
-      <div class="chip" onclick="filterByStar('4', this)">⭐⭐⭐⭐</div>
-      <div class="chip" onclick="filterByStar('3', this)">⭐⭐⭐</div>
-    </div>
-    <div id="categoryGrid">
-      <div class="category-grid">
-        <div class="category-card" onclick="showCategoryPhotos('emotion')">
-          <div class="category-card-icon">❤️</div>
-          <div class="category-card-title">情感记忆</div>
-          <div class="category-card-count">3,247 张</div>
-        </div>
-        <div class="category-card" onclick="showCategoryPhotos('info')">
-          <div class="category-card-icon">📋</div>
-          <div class="category-card-title">信息留存</div>
-          <div class="category-card-count">1,856 张</div>
-        </div>
-        <div class="category-card" onclick="showCategoryPhotos('learning')">
-          <div class="category-card-icon">📚</div>
-          <div class="category-card-title">知识学习</div>
-          <div class="category-card-count">892 张</div>
-        </div>
-        <div class="category-card" onclick="showCategoryPhotos('work')">
-          <div class="category-card-icon">💼</div>
-          <div class="category-card-title">工作沟通</div>
-          <div class="category-card-count">2,134 张</div>
-        </div>
-        <div class="category-card" onclick="showCategoryPhotos('creative')">
-          <div class="category-card-icon">📸</div>
-          <div class="category-card-title">摄影创作</div>
-          <div class="category-card-count">1,567 张</div>
-        </div>
-        <div class="category-card" onclick="showCategoryPhotos('temp')">
-          <div class="category-card-icon">⏱️</div>
-          <div class="category-card-title">临时记录</div>
-          <div class="category-card-count">3,151 张</div>
-        </div>
-      </div>
-    </div>
+    <div id="categoryGrid"></div>
     <div id="photoList" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span style="font-size:14px;font-weight:600" id="photoListTitle">情感记忆</span>
-        <button class="btn btn-sm btn-outline" onclick="backToCategories()">返回分类</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="cursor:pointer;font-size:18px" onclick="backToCategories()">←</span>
+        <span id="photoListTitle" style="font-size:16px;font-weight:600">分类</span>
+      </div>
+      <!-- 星级筛选栏移到这里 -->
+      <div class="filter-chips" id="starFilterBar" style="margin-bottom:12px">
+        <div class="chip active" onclick="filterByStar('all', this)">全部</div>
+        <div class="chip" onclick="filterByStar('5', this)">⭐⭐⭐⭐⭐</div>
+        <div class="chip" onclick="filterByStar('4', this)">⭐⭐⭐⭐</div>
+        <div class="chip" onclick="filterByStar('3', this)">⭐⭐⭐</div>
       </div>
       <div class="photo-grid" id="photoListGrid"></div>
     </div>
@@ -1394,150 +1401,13 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
 
   <!-- Page: Timeline -->
   <div class="page" id="pageTimeline">
-    <div class="timeline">
-      <div class="timeline-year">2026年</div>
-      <div class="timeline-item highlight" onclick="showPhotoDetail('family_beach_400x300.png', '三亚家庭旅行', 5, {emotion:85,info:20,knowledge:10,life:90,future:60}, '情感记忆')">
-        <div class="timeline-item-header">
-          <span class="timeline-item-title">📍 三亚家庭旅行 🌴</span>
-          <span class="timeline-item-date">6月</span>
-        </div>
-        <div class="timeline-item-meta">47张照片 · <span class="stars">⭐⭐⭐⭐⭐</span></div>
-        <div class="timeline-photos">
-          <img src="assets/family_beach_400x300.png" alt="">
-          <img src="assets/travel_landscape_400x300.png" alt="">
-          <img src="assets/child_growth_400x300.png" alt="">
-        </div>
-      </div>
-      <div class="timeline-item" onclick="showPhotoDetail('family_beach_400x300.png', '妈妈60岁生日', 5, {emotion:95,info:10,knowledge:5,life:95,future:50}, '情感记忆')">
-        <div class="timeline-item-header">
-          <span class="timeline-item-title">🎂 妈妈60岁生日 👨‍👩‍👧</span>
-          <span class="timeline-item-date">4月</span>
-        </div>
-        <div class="timeline-item-meta">23张照片 · <span class="stars">⭐⭐⭐⭐⭐</span></div>
-        <div class="timeline-photos">
-          <img src="assets/family_beach_400x300.png" alt="">
-          <img src="assets/food_photo_400x300.png" alt="">
-        </div>
-      </div>
-      <div class="timeline-item" onclick="showPhotoDetail('work_doc_400x300.png', '入职新公司', 4, {emotion:40,info:80,knowledge:70,life:75,future:85}, '工作沟通')">
-        <div class="timeline-item-header">
-          <span class="timeline-item-title">💼 入职新公司</span>
-          <span class="timeline-item-date">3月</span>
-        </div>
-        <div class="timeline-item-meta">8张照片 · <span class="stars">⭐⭐⭐⭐</span></div>
-      </div>
-
-      <div class="timeline-year">2025年</div>
-      <div class="timeline-item highlight" onclick="showPhotoDetail('travel_landscape_400x300.png', '日本东京旅行', 5, {emotion:80,info:30,knowledge:20,life:90,future:70}, '情感记忆')">
-        <div class="timeline-item-header">
-          <span class="timeline-item-title">✈️ 日本东京旅行</span>
-          <span class="timeline-item-date">10月</span>
-        </div>
-        <div class="timeline-item-meta">68张照片 · <span class="stars">⭐⭐⭐⭐⭐</span></div>
-        <div class="timeline-photos">
-          <img src="assets/travel_landscape_400x300.png" alt="">
-          <img src="assets/food_photo_400x300.png" alt="">
-          <img src="assets/family_beach_400x300.png" alt="">
-        </div>
-      </div>
-      <div class="timeline-item" onclick="showPhotoDetail('family_beach_400x300.png', '新房入住', 4, {emotion:70,info:60,knowledge:15,life:85,future:80}, '情感记忆')">
-        <div class="timeline-item-header">
-          <span class="timeline-item-title">🏠 新房入住</span>
-          <span class="timeline-item-date">5月</span>
-        </div>
-        <div class="timeline-item-meta">31张照片 · <span class="stars">⭐⭐⭐⭐</span></div>
-      </div>
-      <div class="timeline-item" onclick="showPhotoDetail('child_growth_400x300.png', '孩子周岁', 5, {emotion:95,info:10,knowledge:5,life:95,future:60}, '情感记忆')">
-        <div class="timeline-item-header">
-          <span class="timeline-item-title">👶 孩子周岁</span>
-          <span class="timeline-item-date">3月</span>
-        </div>
-        <div class="timeline-item-meta">42张照片 · <span class="stars">⭐⭐⭐⭐⭐</span></div>
-        <div class="timeline-photos">
-          <img src="assets/child_growth_400x300.png" alt="">
-          <img src="assets/family_beach_400x300.png" alt="">
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;padding:20px;color:var(--muted);font-size:14px">
-      共发现 48 个人生关键节点
-    </div>
+    <div id="timelineMemoirSection"></div>
+    <div class="timeline" id="timelineContent"></div>
   </div>
 
   <!-- Page: Clean -->
   <div class="page" id="pageClean">
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:24px;font-weight:700;color:var(--danger)">487 张</div>
-      <div style="color:var(--muted);font-size:14px">建议释放 1.2 GB</div>
-    </div>
-
-    <div class="clean-group">
-      <div class="clean-group-header">
-        <span class="tag tag-red">🔴 高确定性</span>
-        <span class="clean-group-count">467张 · 1.1GB</span>
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">强烈建议删除：完全重复、连拍、过期截图</div>
-      <div class="clean-photos">
-        <div class="clean-photo selected" onclick="toggleSelect(this)">
-          <img src="assets/family_beach_400x300.png" alt="">
-          <div class="clean-photo-overlay">重复</div>
-          <div class="clean-photo-check">✓</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/family_beach_400x300.png')">🔍</div>
-        </div>
-        <div class="clean-photo selected" onclick="toggleSelect(this)">
-          <img src="assets/family_beach_400x300.png" alt="">
-          <div class="clean-photo-overlay">连拍</div>
-          <div class="clean-photo-check">✓</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/family_beach_400x300.png')">🔍</div>
-        </div>
-        <div class="clean-photo selected" onclick="toggleSelect(this)">
-          <img src="assets/work_doc_400x300.png" alt="">
-          <div class="clean-photo-overlay">过期</div>
-          <div class="clean-photo-check">✓</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/work_doc_400x300.png')">🔍</div>
-        </div>
-        <div class="clean-photo selected" onclick="toggleSelect(this)">
-          <img src="assets/family_beach_400x300.png" alt="">
-          <div class="clean-photo-overlay">重复</div>
-          <div class="clean-photo-check">✓</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/family_beach_400x300.png')">🔍</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-sm btn-outline" style="flex:1" onclick="selectAll(this, true)">全选</button>
-        <button class="btn btn-sm btn-outline" style="flex:1" onclick="selectAll(this, false)">全不选</button>
-      </div>
-    </div>
-
-    <div class="clean-group">
-      <div class="clean-group-header">
-        <span class="tag tag-yellow">🟡 中确定性</span>
-        <span class="clean-group-count">20张 · 120MB</span>
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">建议考虑：低质量、过时工作截图</div>
-      <div class="clean-photos">
-        <div class="clean-photo" onclick="toggleSelect(this)">
-          <img src="assets/blurry_photo_400x300.png" alt="">
-          <div class="clean-photo-overlay">模糊</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/blurry_photo_400x300.png')">🔍</div>
-        </div>
-        <div class="clean-photo" onclick="toggleSelect(this)">
-          <img src="assets/work_doc_400x300.png" alt="">
-          <div class="clean-photo-overlay">工作</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/work_doc_400x300.png')">🔍</div>
-        </div>
-        <div class="clean-photo" onclick="toggleSelect(this)">
-          <img src="assets/course_ppt_400x300.png" alt="">
-          <div class="clean-photo-overlay">过期</div>
-          <div class="clean-photo-zoom" onclick="event.stopPropagation();openCleanLightbox('assets/course_ppt_400x300.png')">🔍</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:398px;background:var(--bg2);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:250;border:1px solid var(--rule);box-shadow:var(--shadow)">
-      <span style="font-size:14px">已选择：<strong id="selectedCount">467</strong> 张 · 约 <strong id="selectedSize">1.1GB</strong></span>
-      <button class="btn btn-sm btn-danger" onclick="confirmDelete()">确认删除</button>
-    </div>
+    <div id="cleanContent"></div>
   </div>
 
   <!-- Clean Photo Lightbox -->
@@ -1553,89 +1423,8 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
         <div style="font-size:18px;font-weight:700">🔒 数字保险柜</div>
         <div style="font-size:12px;color:var(--muted)">已加密 · 本地存储</div>
       </div>
-      <button class="btn btn-sm btn-primary" style="width:auto">+ 添加</button>
     </div>
-
-    <div class="vault-category">
-      <div class="vault-category-header">
-        <span class="vault-category-title">身份类</span>
-        <span class="vault-category-count">共 8 张</span>
-      </div>
-      <div class="vault-items">
-        <div class="vault-item" onclick="showPhotoDetail('id_card_400x300.png', '身份证', 5, {emotion:5,info:95,knowledge:10,life:80,future:90}, '信息留存')">
-          <img src="assets/id_card_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">身份证</div>
-        </div>
-        <div class="vault-item">
-          <img src="assets/id_card_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">护照</div>
-        </div>
-        <div class="vault-item">
-          <img src="assets/id_card_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">驾照</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="vault-category">
-      <div class="vault-category-header">
-        <span class="vault-category-title">财务类</span>
-        <span class="vault-category-count">共 12 张</span>
-      </div>
-      <div class="vault-items">
-        <div class="vault-item">
-          <img src="assets/id_card_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">银行卡</div>
-        </div>
-        <div class="vault-item">
-          <img src="assets/work_doc_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">发票</div>
-        </div>
-        <div class="vault-item">
-          <img src="assets/work_doc_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">收据</div>
-        </div>
-        <div class="vault-item">
-          <img src="assets/work_doc_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">合同</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="vault-category">
-      <div class="vault-category-header">
-        <span class="vault-category-title">房产类</span>
-        <span class="vault-category-count">共 5 张</span>
-      </div>
-      <div class="vault-items">
-        <div class="vault-item">
-          <img src="assets/work_doc_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">房产证</div>
-        </div>
-        <div class="vault-item">
-          <img src="assets/work_doc_400x300.png" class="vault-item-img" alt="">
-          <div class="vault-item-name">购房合同</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="font-size:16px;font-weight:700;margin:20px 0 12px">🔔 到期提醒</div>
-    <div class="reminder-item">
-      <span class="reminder-icon">📅</span>
-      <div class="reminder-info">
-        <div class="reminder-title">护照</div>
-        <div class="reminder-desc">2026年12月到期</div>
-      </div>
-      <span class="reminder-days">187天</span>
-    </div>
-    <div class="reminder-item">
-      <span class="reminder-icon">📅</span>
-      <div class="reminder-info">
-        <div class="reminder-title">身份证</div>
-        <div class="reminder-desc">2027年11月到期</div>
-      </div>
-      <span class="reminder-days">548天</span>
-    </div>
+    <div id="vaultContent"></div>
   </div>
 
   <!-- Page: Settings -->
@@ -1644,8 +1433,8 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
       <div class="card-title" style="margin-bottom:12px"><span class="icon">🔒</span>隐私与安全</div>
       <div class="setting-item">
         <div>
-          <div class="setting-label">本地处理模式</div>
-          <div class="setting-desc">所有AI分析仅在设备上运行</div>
+          <div class="setting-label">照片不上传云端</div>
+          <div class="setting-desc">照片原图仅存本地，不上传云端</div>
         </div>
         <div class="toggle active" onclick="this.classList.toggle('active')"></div>
       </div>
@@ -1714,7 +1503,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
       <div class="card-title" style="margin-bottom:12px"><span class="icon">🎨</span>外观</div>
       <div class="setting-item">
         <div class="setting-label">深色主题</div>
-        <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+        <div class="toggle active" id="darkThemeToggle" onclick="toggleDarkTheme()"></div>
       </div>
     </div>
 
@@ -1727,9 +1516,24 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
       <button class="btn btn-primary" onclick="showToast('会员购买功能开发中')">升级会员 39元/月</button>
     </div>
 
+    <div class="card" style="margin-top:12px">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">👤</span>账号</div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--ink)" id="currentUserPhone">未登录</div>
+            <div style="font-size:12px;color:var(--muted)">点击退出后切换账号</div>
+          </div>
+        </div>
+        <button class="btn btn-outline" style="width:100%;min-height:44px;color:var(--danger);border-color:var(--danger)" onclick="logout()">退出登录</button>
+      </div>
+    </div>
+
     <div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">
       AI人生档案馆 v4.5<br>
-      本地处理 · 隐私零风险
+      照片不上传云端 · AI视觉分析
     </div>
   </div>
 
@@ -1738,10 +1542,12 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     <div class="modal-header">
       <span style="cursor:pointer" onclick="closePhotoModal()">✕ 关闭</span>
       <span id="modalPhotoTitle">照片详情</span>
-      <span style="cursor:pointer" onclick="showToast('分享功能开发中')">分享</span>
+      <span id="photoNavCounter" style="font-size:12px;color:var(--muted)">1 / 1</span>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" style="position:relative">
       <img id="modalPhotoImg" src="" alt="">
+      <div id="photoNavPrev" onclick="prevPhoto()" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;cursor:pointer;z-index:10">‹</div>
+      <div id="photoNavNext" onclick="nextPhoto()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;cursor:pointer;z-index:10">›</div>
     </div>
     <div class="modal-panel">
       <div class="modal-panel-title">📸 AI 分析报告</div>
@@ -1780,19 +1586,24 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
       <div style="margin-bottom:12px">
         <div style="font-size:13px;color:var(--muted);margin-bottom:4px">意图分类</div>
         <span class="tag tag-blue" id="modalIntent">情感记忆 · 家庭合影</span>
+        <span id="modalEstimated" style="font-size:11px;color:var(--warning);margin-left:6px;display:none">⚠️ 估算结果</span>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">🤖 AI 描述</div>
+        <div style="font-size:14px;color:var(--ink);line-height:1.5" id="modalDescription">正在生成描述...</div>
       </div>
       <div style="margin-bottom:12px">
         <div style="font-size:13px;color:var(--muted);margin-bottom:4px">检测结果</div>
-        <div style="font-size:14px">含3人 · 无文字 · 非截图 · GPS: 三亚</div>
+        <div style="font-size:14px" id="modalDetections">含3人 · 无文字 · 非截图 · GPS: 三亚</div>
       </div>
       <div style="margin-bottom:16px">
         <div style="font-size:13px;color:var(--muted);margin-bottom:4px">💡 AI建议</div>
-        <div style="font-size:14px;color:var(--accent3)">长期归档到人生时间轴</div>
+        <div style="font-size:14px;color:var(--accent3)" id="modalSuggestion">长期归档到人生时间轴</div>
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline" style="flex:1" onclick="showToast('已标记为重要照片')">★ 标记重要</button>
         <button class="btn btn-outline" style="flex:1" onclick="showToast('分享功能开发中')">分享</button>
-        <button class="btn btn-danger" style="flex:1" onclick="showToast('已移至回收站')">删除</button>
+        <button class="btn btn-danger" style="flex:1" onclick="deletePhoto(currentPhotoId)">删除</button>
       </div>
     </div>
   </div>
@@ -1804,7 +1615,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
       <span>✍️ AI写文案</span>
       <span></span>
     </div>
-    <div class="modal-body" style="padding:16px;padding-bottom:80px">
+    <div class="modal-body" style="padding:16px;padding-bottom:80px;background:var(--bg);display:block;overflow-y:auto">
       <!-- Step 1: 选择场景 -->
       <div id="storyStep1">
         <div style="font-size:14px;font-weight:600;margin-bottom:12px">步骤1/3：选择分享场景</div>
@@ -1890,97 +1701,91 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     </div>
   </div>
 
-  <!-- Timeline Video Generator Modal -->
+  <!-- Memoir Generator Modal -->
   <div class="modal-overlay" id="videoModal">
     <div class="modal-header">
       <span style="cursor:pointer" onclick="closeVideoModal()">✕ 关闭</span>
-      <span>🎬 生成回忆录</span>
+      <span>📖 生成回忆录</span>
       <span></span>
     </div>
-    <div class="modal-body" style="padding:16px;padding-bottom:80px">
-      <!-- Step 1: 选择主题模板 -->
+    <div class="modal-body" style="padding:16px;padding-bottom:80px;background:var(--bg);display:block;overflow-y:auto">
+      <!-- Step 1: 选择主题 -->
       <div id="videoStep1">
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px">步骤1/3：选择回忆录主题</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px">步骤1/3：选择自传主题</div>
         <div class="template-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
           <div class="template-card active" data-theme="warm" onclick="selectVideoTheme('warm', this)">
             <div class="template-icon">🏠</div>
             <div class="template-title">温馨家庭</div>
-            <div class="template-desc">适合家庭合影、节日聚会</div>
+            <div class="template-desc">家庭合影、节日聚会</div>
           </div>
           <div class="template-card" data-theme="travel" onclick="selectVideoTheme('travel', this)">
             <div class="template-icon">✈️</div>
             <div class="template-title">旅行足迹</div>
-            <div class="template-desc">适合风景照、旅行记录</div>
+            <div class="template-desc">风景照、旅行记录</div>
           </div>
           <div class="template-card" data-theme="growth" onclick="selectVideoTheme('growth', this)">
             <div class="template-icon">🌱</div>
             <div class="template-title">成长记录</div>
-            <div class="template-desc">适合孩子、宠物成长</div>
+            <div class="template-desc">孩子、宠物成长</div>
           </div>
           <div class="template-card" data-theme="year" onclick="selectVideoTheme('year', this)">
             <div class="template-icon">📅</div>
             <div class="template-title">年度总结</div>
-            <div class="template-desc">适合全年精选回顾</div>
+            <div class="template-desc">全年精选回顾</div>
           </div>
         </div>
-        <button class="btn btn-primary" style="width:100%;min-height:48px" onclick="videoNextStep(2)">下一步：选择时间范围</button>
+        <button class="btn btn-primary" style="width:100%;min-height:48px" onclick="videoNextStep(2)">下一步：选择照片</button>
       </div>
 
-      <!-- Step 2: 时间范围与配乐 -->
+      <!-- Step 2: 手动勾选照片 -->
       <div id="videoStep2" style="display:none">
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px">步骤2/3：筛选与配乐</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">选择时间范围</div>
-        <div class="filter-chips" style="margin-bottom:16px">
-          <div class="chip active" onclick="selectVideoRange('all', this)">全部照片</div>
-          <div class="chip" onclick="selectVideoRange('year', this)">过去一年</div>
-          <div class="chip" onclick="selectVideoRange('month', this)">过去一月</div>
-        </div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">选择配乐风格</div>
-        <div class="music-list" style="margin-bottom:16px">
-          <div class="music-card active" data-music="soft" onclick="selectVideoMusic('soft', this)">
-            <div>🎵 轻柔舒缓</div>
-            <small>适合温馨、回忆类主题</small>
-          </div>
-          <div class="music-card" data-music="happy" onclick="selectVideoMusic('happy', this)">
-            <div>🎸 轻快欢脱</div>
-            <small>适合旅行、派对类主题</small>
-          </div>
-          <div class="music-card" data-music="nostalgic" onclick="selectVideoMusic('nostalgic', this)">
-            <div>🎹 怀旧抒情</div>
-            <small>适合成长、年度总结类主题</small>
+        <div style="font-size:14px;font-weight:600;margin-bottom:8px">步骤2/3：勾选照片</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;color:var(--muted)">已选 <span id="selectedPhotoCount" style="color:var(--accent);font-weight:600">0</span> 张</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline" style="min-height:36px;font-size:12px;padding:4px 12px" onclick="selectAllMemoirPhotos(true)">全选</button>
+            <button class="btn btn-outline" style="min-height:36px;font-size:12px;padding:4px 12px" onclick="selectAllMemoirPhotos(false)">取消全选</button>
           </div>
         </div>
+        <div id="memoirPhotoSelector" style="max-height:400px;overflow-y:auto;margin-bottom:16px"></div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-outline" style="flex:1;min-height:48px" onclick="videoPrevStep(1)">上一步</button>
-          <button class="btn btn-primary" style="flex:1;min-height:48px" onclick="videoNextStep(3)">下一步：预览生成</button>
+          <button class="btn btn-primary" style="flex:1;min-height:48px" onclick="videoNextStep(3)">生成回忆录</button>
         </div>
       </div>
 
-      <!-- Step 3: 生成结果 -->
+      <!-- Step 3: 自传生成与编辑 -->
       <div id="videoStep3" style="display:none">
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px">步骤3/3：生成回忆录</div>
-        <div id="videoScriptPreview" style="display:none;margin-bottom:16px">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:8px">AI生成的旁白</div>
-          <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:12px;font-size:14px;line-height:1.6;color:var(--ink);margin-bottom:8px" id="videoOpeningText"></div>
-          <div style="font-size:12px;color:var(--accent)" id="videoCaptionList"></div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px">步骤3/3：我的自传</div>
+        <div id="memoirLoading" class="analysis-status" style="display:flex;margin-bottom:12px">
+            <div class="dot"></div>
+          <span id="memoirLoadingText">AI 正在根据照片撰写自传故事...</span>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-bottom:12px;min-height:48px" onclick="generateTimelineVideo()" id="videoGenBtn">开始生成视频</button>
-        <div id="videoLoading" class="analysis-status" style="display:none;margin-bottom:12px">
-          <div class="dot"></div>
-          <span id="videoLoadingText">正在生成回忆录...</span>
-        </div>
-        <div id="videoResult" style="display:none">
-          <div class="video-canvas-container">
-            <canvas id="videoCanvas" width="720" height="1280"></canvas>
-            <div class="video-progress"><div class="video-progress-fill" id="videoProgressFill"></div></div>
+        <div id="memoirContent" style="display:none">
+          <!-- 自传标题 -->
+          <div style="text-align:center;margin-bottom:16px">
+            <input type="text" id="memoirTitle" style="font-size:18px;font-weight:700;text-align:center;background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:10px;width:100%;color:var(--ink)" placeholder="自传标题">
           </div>
-          <video id="videoPreview" style="width:100%;border-radius:var(--radius-sm);margin-bottom:12px;display:none" controls></video>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-primary" style="flex:1;min-height:48px" onclick="downloadVideo()" id="downloadVideoBtn">下载视频</button>
-            <button class="btn btn-outline" style="flex:1;min-height:48px" onclick="regenerateVideo()">重新生成</button>
+          <!-- 开场白 -->
+          <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px">开场白</div>
+            <textarea id="memoirOpening" style="width:100%;min-height:60px;background:transparent;border:none;color:var(--ink);font-size:14px;line-height:1.6;resize:vertical" placeholder="开场白..."></textarea>
           </div>
+          <!-- 各章节 -->
+          <div id="memoirChapters"></div>
+          <!-- 结尾 -->
+          <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px">结尾感言</div>
+            <textarea id="memoirEnding" style="width:100%;min-height:60px;background:transparent;border:none;color:var(--ink);font-size:14px;line-height:1.6;resize:vertical" placeholder="结尾感言..."></textarea>
+          </div>
+          <!-- 操作按钮 -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" style="flex:1;min-height:48px;min-width:120px" onclick="saveMemoir()">💾 保存回忆录</button>
+            <button class="btn btn-outline" style="flex:1;min-height:48px;min-width:120px" onclick="exportMemoir()">导出自传</button>
+            <button class="btn btn-outline" style="flex:1;min-height:48px;min-width:120px" onclick="regenerateMemoir()">重新生成</button>
+          </div>
+          <button class="btn btn-outline" style="width:100%;margin-top:8px;min-height:48px" onclick="resetVideoFlow()">从头开始</button>
         </div>
-        <button class="btn btn-outline" style="width:100%;margin-top:12px;min-height:48px" onclick="resetVideoFlow()">从头开始</button>
       </div>
     </div>
   </div>
@@ -2036,7 +1841,7 @@ window.API_BASE = (location.hostname === 'localhost' || location.hostname === '1
     <span>⚙️ AI服务配置</span>
     <span></span>
   </div>
-  <div class="modal-body" style="padding:16px;display:block;align-items:stretch;justify-content:flex-start;overflow-y:auto">
+  <div class="modal-body" style="padding:16px;display:block;align-items:stretch;justify-content:flex-start;overflow-y:auto;background:var(--bg)">
     <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">
       AI文案、回忆录脚本由后端代理服务调用大模型生成。你可以使用下方免费平台获取 API Key。
     </div>

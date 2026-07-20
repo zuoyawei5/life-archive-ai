@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<title>AI人生档案馆 - 管理后台</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --bg3: #334155;
+    --ink: #f1f5f9;
+    --muted: #94a3b8;
+    --rule: #475569;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --accent3: #34d399;
+    --danger: #f87171;
+    --warning: #fbbf24;
+    --success: #34d399;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ==================== 登录页 ==================== */
+  #loginPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .login-card {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: var(--shadow);
+  }
+
+  .login-card h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: var(--accent);
+  }
+
+  .login-card .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+
+  .login-card input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg3);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    font-size: 15px;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .login-card input:focus {
+    border-color: var(--accent);
+  }
+
+  .login-card input::placeholder {
+    color: var(--muted);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0f172a;
+    width: 100%;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: var(--bg3);
+    border: 1px solid var(--rule);
+  }
+
+  .btn-sm:hover {
+    border-color: var(--accent);
+  }
+
+  .login-error {
+    color: var(--danger);
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  /* ==================== 管理面板 ==================== */
+  #adminPanel {
+    display: none;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .admin-header h1 {
+    font-size: 22px;
+    color: var(--accent);
+  }
+
+  .admin-header .actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  /* 统计面板 */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--rule);
+  }
+
+  .stat-card .stat-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .stat-card .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .stat-card.accent .stat-value { color: var(--accent); }
+  .stat-card.accent2 .stat-value { color: var(--accent2); }
+  .stat-card.accent3 .stat-value { color: var(--accent3); }
+  .stat-card.warning .stat-value { color: var(--warning); }
+
+  /* 用户列表 */
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-bar {
+    margin-bottom: 16px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    background: var(--bg3);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    font-size: 14px;
+    outline: none;
+  }
+
+  .search-bar input:focus {
+    border-color: var(--accent);
+  }
+
+  .table-container {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--rule);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+
+  thead tr {
+    background: var(--bg3);
+  }
+
+  th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-top: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover {
+    background: var(--bg3);
+  }
+
+  .phone-cell {
+    font-family: monospace;
+    color: var(--accent);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-active {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--success);
+  }
+
+  .badge-inactive {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--muted);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state .icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  /* 用户详情弹窗 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: var(--shadow);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .modal h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal h2 .close-btn {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 24px;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .detail-row .label {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .detail-row .value {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--bg3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 600px) {
+    #adminPanel { padding: 16px 12px; }
+    .stat-card { padding: 18px 14px; }
+    .stat-card .stat-value { font-size: 26px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    th, td { padding: 10px 10px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== 登录页 ==================== -->
+<div id="loginPage">
+  <div class="login-card">
+    <h1>AI人生档案馆</h1>
+    <p class="subtitle">管理后台登录</p>
+    <div class="login-error" id="loginError">密码错误，请重试</div>
+    <input type="password" id="adminPassword" placeholder="请输入管理员密码" onkeypress="if(event.key==='Enter') doAdminLogin()">
+    <button class="btn btn-primary" onclick="doAdminLogin()">登录</button>
+    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted)">
+      默认密码: admin888（可通过环境变量 ADMIN_PASSWORD 修改）
+    </p>
+  </div>
+</div>
+
+<!-- ==================== 管理面板 ==================== -->
+<div id="adminPanel">
+  <div class="admin-header">
+    <h1>AI人生档案馆 - 管理后台</h1>
+    <div class="actions">
+      <button class="btn btn-sm" onclick="refreshData()">刷新数据</button>
+      <button class="btn btn-sm" onclick="adminLogout()">退出登录</button>
+    </div>
+  </div>
+
+  <!-- 统计面板 -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card accent">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value" id="statTotalUsers">-</div>
+      <div class="stat-label">总用户数</div>
+    </div>
+    <div class="stat-card accent2">
+      <div class="stat-icon">📸</div>
+      <div class="stat-value" id="statTotalPhotos">-</div>
+      <div class="stat-label">总照片数</div>
+    </div>
+    <div class="stat-card accent3">
+      <div class="stat-icon">📚</div>
+      <div class="stat-value" id="statTotalMemoirs">-</div>
+      <div class="stat-label">总回忆录数</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-value" id="statTodayActive">-</div>
+      <div class="stat-label">今日活跃</div>
+    </div>
+  </div>
+
+  <!-- 用户列表 -->
+  <div class="section-title">📋 用户列表</div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="搜索手机号..." oninput="filterUsers()">
+  </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>手机号</th>
+          <th>注册时间</th>
+          <th>最后活跃</th>
+          <th>照片数</th>
+          <th>回忆录数</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <tr>
+          <td colspan="6">
+            <div class="loading">
+              <div class="spinner"></div>
+              <div>加载中...</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="index.html" class="back-link">← 返回主应用</a>
+</div>
+
+<!-- ==================== 用户详情弹窗 ==================== -->
+<div class="modal-overlay" id="userDetailModal">
+  <div class="modal">
+    <h2>
+      <span>用户详情</span>
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+    </h2>
+    <div id="userDetailContent">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>加载中...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 全局状态 ====================
+let adminToken = null;
+let allUsers = [];
+
+// ==================== 登录 ====================
+function doAdminLogin() {
+  const password = document.getElementById('adminPassword').value.trim();
+  if (!password) {
+    document.getElementById('loginError').textContent = '请输入密码';
+    document.getElementById('loginError').style.display = 'block';
+    return;
+  }
+
+  fetch('/api/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      adminToken = data.token;
+      sessionStorage.setItem('adminToken', adminToken);
+      showAdminPanel();
+    } else {
+      document.getElementById('loginError').textContent = data.message || '密码错误';
+      document.getElementById('loginError').style.display = 'block';
+    }
+  })
+  .catch(err => {
+    document.getElementById('loginError').textContent = '网络错误，请检查服务是否启动';
+    document.getElementById('loginError').style.display = 'block';
+  });
+}
+
+function adminLogout() {
+  adminToken = null;
+  sessionStorage.removeItem('adminToken');
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('adminPassword').value = '';
+}
+
+function showAdminPanel() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  document.getElementById('loginError').style.display = 'none';
+  loadStats();
+  loadUsers();
+}
+
+// ==================== 统计数据 ====================
+function loadStats() {
+  fetch('/api/admin/stats')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const s = data.stats;
+        document.getElementById('statTotalUsers').textContent = s.totalUsers;
+        document.getElementById('statTotalPhotos').textContent = s.totalPhotos;
+        document.getElementById('statTotalMemoirs').textContent = s.totalMemoirs;
+        document.getElementById('statTodayActive').textContent = s.todayActive;
+      }
+    })
+    .catch(err => console.error('加载统计失败:', err));
+}
+
+// ==================== 用户列表 ====================
+function loadUsers() {
+  fetch('/api/admin/users')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        allUsers = data.users || [];
+        renderUserTable(allUsers);
+      }
+    })
+    .catch(err => {
+      console.error('加载用户列表失败:', err);
+      document.getElementById('userTableBody').innerHTML =
+        '<tr><td colspan="6"><div class="empty-state"><div class="icon">⚠️</div>加载失败，请检查服务是否正常</div></td></tr>';
+    });
+}
+
+function renderUserTable(users) {
+  const tbody = document.getElementById('userTableBody');
+
+  if (!users || users.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div>暂无用户数据</div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = users.map(u => {
+    const created = formatDateTime(u.created_at);
+    const lastActive = formatDateTime(u.last_active);
+    const isActive = isToday(u.last_active);
+
+    return `<tr onclick="showUserDetail('${u.phone}')">
+      <td class="phone-cell">${maskPhone(u.phone)}</td>
+      <td>${created}</td>
+      <td>${lastActive}</td>
+      <td>${u.photo_count || 0}</td>
+      <td>${u.memoir_count || 0}</td>
+      <td><span class="badge ${isActive ? 'badge-active' : 'badge-inactive'}">${isActive ? '活跃' : '未活跃'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterUsers() {
+  const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!keyword) {
+    renderUserTable(allUsers);
+    return;
+  }
+  const filtered = allUsers.filter(u => (u.phone || '').toLowerCase().includes(keyword));
+  renderUserTable(filtered);
+}
+
+// ==================== 用户详情 ====================
+function showUserDetail(phone) {
+  document.getElementById('userDetailModal').classList.add('show');
+  const content = document.getElementById('userDetailContent');
+  content.innerHTML = '<div class="loading"><div class="spinner"></div><div>加载中...</div></div>';
+
+  fetch(`/api/admin/user/${encodeURIComponent(phone)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.user) {
+        const u = data.user;
+        let settings = {};
+        try { settings = JSON.parse(u.settings || '{}'); } catch(e) {}
+
+        content.innerHTML = `
+          <div class="detail-row">
+            <span class="label">手机号</span>
+            <span class="value">${maskPhone(u.phone)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">完整手机号</span>
+            <span class="value">${u.phone}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">注册时间</span>
+            <span class="value">${formatDateTime(u.created_at)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">最后活跃</span>
+            <span class="value">${formatDateTime(u.last_active)}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">照片数量</span>
+            <span class="value">${u.photo_count || 0}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">回忆录数量</span>
+            <span class="value">${u.memoir_count || 0}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">主题设置</span>
+            <span class="value">${settings.theme || 'dark'}</span>
+          </div>
+        `;
+      } else {
+        content.innerHTML = '<div class="empty-state"><div class="icon">❌</div>未找到用户信息</div>';
+      }
+    })
+    .catch(err => {
+      content.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>加载失败</div>';
+    });
+}
+
+function closeModal() {
+  document.getElementById('userDetailModal').classList.remove('show');
+}
+
+// 点击遮罩关闭弹窗
+document.getElementById('userDetailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ==================== 刷新数据 ====================
+function refreshData() {
+  loadStats();
+  loadUsers();
+}
+
+// ==================== 工具函数 ====================
+function maskPhone(phone) {
+  if (!phone || phone.length !== 11) return phone;
+  return phone.slice(0, 3) + '****' + phone.slice(7);
+}
+
+function formatDateTime(dt) {
+  if (!dt) return '-';
+  return dt;
+}
+
+function isToday(dt) {
+  if (!dt) return false;
+  const today = new Date();
+  const dateStr = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+  return dt.startsWith(dateStr);
+}
+
+// ==================== 初始化 ====================
+// 检查是否已登录（token保存在sessionStorage中）
+(function() {
+  const savedToken = sessionStorage.getItem('adminToken');
+  if (savedToken) {
+    adminToken = savedToken;
+    showAdminPanel();
+  }
+})();
+</script>
+</body>
+</html>
